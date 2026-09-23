@@ -16,7 +16,7 @@
 - ไฟล์ที่แตะ: backend/app/db/models.py, backend/app/db/migrations/001_init.py, backend/app/db/session.py
 - ต้องทำหลัง: ไม่มี
 - เสร็จเมื่อ: migration สร้างตาราง slots, bookings, audit_logs ใน PostgreSQL และตาราง bookings เก็บเฉพาะ hn ไม่มีเลขบัตรประชาชน
-- สถานะ: พร้อมทำ
+- สถานะ: เสร็จ รอทีมตรวจ
 
 ### T-02 สร้าง API ค้นช่วงว่างและคำนวณแพ็กเกจ
 - รองรับ: FR-BKG-01, FR-BKG-06, NFR-PERF-01
@@ -72,7 +72,7 @@
 - ไฟล์ที่แตะ: frontend/src/pages/SlotPicker.jsx, frontend/src/App.jsx, frontend/src/api/client.js
 - ต้องทำหลัง: ไม่มี
 - เสร็จเมื่อ: ผู้ใช้เลือกแพ็กเกจและดูช่วงเวลา/จำนวนที่นั่งคงเหลือได้บนหน้าจอ โดยใช้ API จำลองตามสัญญาใน plan.md
-- สถานะ: พร้อมทำ
+- สถานะ: เสร็จ รอทีมตรวจ
 
 ### T-09 สร้างหน้าจอยืนยันและผลลัพธ์เชื่อม API จริง
 - รองรับ: FR-BKG-03, FR-BKG-04, FR-BKG-05
