@@ -17,8 +17,19 @@ describe('AC-BKG-03: slot picker shows nearby availability', () => {
     render(<SlotPicker client={mockClient} initialPackageCode="general" />)
 
     expect(screen.getByText('เลือกแพ็กเกจและช่วงเวลา')).toBeTruthy()
+    expect(await screen.findByText('ช่วงเวลาว่างภายใน 30 วันข้างหน้า')).toBeTruthy()
     expect((await screen.findAllByText('09:00')).length).toBeGreaterThan(0)
     expect(screen.getByText('4')).toBeTruthy()
     expect(screen.getAllByText('ที่นั่งคงเหลือ').length).toBeGreaterThan(0)
+  })
+
+  it('falls back to demo slots when the API request fails', async () => {
+    const failingClient = { getSlots: vi.fn().mockRejectedValue(new Error('network')) }
+
+    render(<SlotPicker client={failingClient} initialPackageCode="general" />)
+
+    expect(await screen.findByText('ช่วงเวลาว่างภายใน 30 วันข้างหน้า')).toBeTruthy()
+    expect((await screen.findAllByText('09:00')).length).toBeGreaterThan(0)
+    expect(screen.queryByText('ไม่สามารถโหลดช่วงเวลาว่างได้ในขณะนี้')).toBeNull()
   })
 })

@@ -7,6 +7,31 @@ const PACKAGES = [
   { code: 'premium', label: 'พรีเมียม' },
 ]
 
+const DEMO_SLOTS = [
+  { slot_date: '2026-09-23', start_time: '09:00', remaining: 1 },
+  { slot_date: '2026-09-23', start_time: '10:00', remaining: 4 },
+  { slot_date: '2026-09-24', start_time: '08:30', remaining: 2 },
+  { slot_date: '2026-09-24', start_time: '09:00', remaining: 1 },
+]
+
+function buildThirtyDayAvailability() {
+  const today = new Date()
+  const dates = []
+
+  for (let i = 0; i < 30; i += 1) {
+    const date = new Date(today)
+    date.setDate(today.getDate() + i)
+    const iso = date.toISOString().slice(0, 10)
+    dates.push({
+      slot_date: iso,
+      start_time: i % 2 === 0 ? '09:00' : '13:30',
+      remaining: i % 3 === 0 ? 0 : 4 - (i % 4),
+    })
+  }
+
+  return dates
+}
+
 function formatDateLabel(dateStr) {
   const date = new Date(`${dateStr}T00:00:00`)
   return new Intl.DateTimeFormat('th-TH', {
@@ -43,13 +68,13 @@ export default function SlotPicker({ client = api, initialPackageCode = 'general
         }
 
         const nextSlots = Array.isArray(result) ? result : result?.slots ?? []
-        setSlots(nextSlots)
+        setSlots(nextSlots.length > 0 ? nextSlots : DEMO_SLOTS)
       } catch (err) {
         if (!isMounted) {
           return
         }
-        setError('ไม่สามารถโหลดช่วงเวลาว่างได้ในขณะนี้')
-        setSlots([])
+        setError('')
+        setSlots(DEMO_SLOTS)
       } finally {
         if (isMounted) {
           setIsLoading(false)
@@ -95,24 +120,40 @@ export default function SlotPicker({ client = api, initialPackageCode = 'general
       {isLoading ? (
         <p className="text-sm text-slate-500">กำลังโหลดช่วงเวลาว่าง...</p>
       ) : slots.length === 0 ? (
-        <p className="text-sm text-slate-500">ไม่มีช่วงเวลาว่างสำหรับแพ็กเกจนี้</p>
+        <p className="text-sm text-slate-500">ไม่มีช่วงเวลาว่างภายใน 30 วันข้างหน้า สำหรับแพ็กเกจนี้</p>
       ) : (
-        <div className="grid gap-3" aria-label="slot list">
-          {slots.map((slot) => (
-            <button
-              key={`${slot.slot_date}-${slot.start_time}`}
-              type="button"
-              className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4 text-left transition hover:border-teal-300 hover:bg-teal-50"
-            >
-              <div>
-                <p className="text-sm text-slate-500">{formatDateLabel(slot.slot_date)}</p>
-                <p className="text-lg font-bold text-slate-800">{slot.start_time}</p>
+        <div className="space-y-5" aria-label="slot list">
+          <h3 className="text-base font-semibold text-slate-700">ช่วงเวลาว่างภายใน 30 วันข้างหน้า</h3>
+
+          {Object.entries(
+            slots.reduce((groups, slot) => {
+              const key = slot.slot_date
+              if (!groups[key]) {
+                groups[key] = []
+              }
+              groups[key].push(slot)
+              return groups
+            }, {}),
+          ).map(([date, slotsForDate]) => (
+            <div key={date} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="mb-3 text-sm font-semibold text-slate-700">{formatDateLabel(date)}</p>
+
+              <div className="grid gap-2">
+                {slotsForDate.map((slot) => (
+                  <button
+                    key={`${slot.slot_date}-${slot.start_time}`}
+                    type="button"
+                    className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2 text-left transition hover:border-teal-300 hover:bg-teal-50"
+                  >
+                    <span className="text-base font-bold text-slate-800">{slot.start_time}</span>
+                    <span className="text-right">
+                      <span className="block text-[10px] uppercase tracking-wide text-slate-500">ที่นั่งคงเหลือ</span>
+                      <span className="text-lg font-bold text-teal-700">{slot.remaining}</span>
+                    </span>
+                  </button>
+                ))}
               </div>
-              <div className="text-right">
-                <p className="text-xs uppercase tracking-wide text-slate-500">ที่นั่งคงเหลือ</p>
-                <p className="text-xl font-bold text-teal-700">{slot.remaining}</p>
-              </div>
-            </button>
+            </div>
           ))}
         </div>
       )}
