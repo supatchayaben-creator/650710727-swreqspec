@@ -44,3 +44,22 @@
 - รายงานของ AI: POST /bookings ตรวจยืนยันตัวตน (IF-IDP-01) ตัดที่นั่ง บันทึกการจอง และคืนหมายเลขคิวตาม FR-BKG-04 ถ้าช่วงเวลาเต็มตอบ 409 นอกจากนี้ได้เพิ่ม DELETE /bookings/{id} สำหรับยกเลิกการจอง เพื่อความสมบูรณ์ของระบบ
 - สิ่งที่เกือบต้องเดา: ไม่มี ทำตาม spec ครบ
 - ทีมตรวจ 5 ข้อแล้ว ผ่าน แก้สถานะเป็น "เสร็จ"
+
+---
+
+## 2569-10-07 08:24 คำสั่ง: /testcases AC-BKG-01 specs/001-booking/
+
+- เครื่องมือ: Copilot ใน Codespaces (Agent, Auto)
+- ผลลัพธ์: ใช้แถวที่สถานะ "ใช้ได้" ของ AC-BKG-01 ใน specs/001-booking/test-cases.md แล้วเขียน test backend ตาม row 3 แถว
+- ไฟล์ที่สร้าง/แก้: backend/tests/test_AC_BKG_01.py, specs/001-booking/test-cases.md
+- รายละเอียด: ตรวจสอบความถูกต้องตาม Given/When/Then ของ AC-BKG-01 พร้อมอ้างอิง FR-BKG-04 และ IF-IDP-01
+- สิ่งที่ทำ: ปรับสถานะ row เป็น "ใช้ได้" และเขียน 3 test: success/edge/failure
+
+---
+
+## 2569-10-07 08:30 คำสั่ง: /verify specs/001-booking/
+
+- เครื่องมือ: Copilot ใน Codespaces (Agent, Auto)
+- ผลลัพธ์: สร้าง [specs/001-booking/rtm.md](specs/001-booking/rtm.md) และรายงานตรวจตามรอย requirement → AC → task → โค้ด → test
+- ตรวจสอบ: backend test ทั้งหมด 6 passed; frontend test 1 passed
+- รายงาน: มีข้อค้นพบสำคัญใน FR-BKG-01 (14 วัน ไม่ใช่ 30 วัน), Q-02 (เดา A001), FR-BKG-06 (ไม่มี AC), DOM-PDPA-01 (ไม่มี audit logging), และ out-of-scope cancel endpoint
